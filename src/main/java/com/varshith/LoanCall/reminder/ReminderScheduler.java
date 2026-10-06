@@ -1,5 +1,6 @@
 package com.varshith.LoanCall.reminder;
 
+import com.varshith.LoanCall.calling.CallingService;
 import com.varshith.LoanCall.loan.Loan;
 import com.varshith.LoanCall.loan.LoanRepository;
 import com.varshith.LoanCall.loan.LoanStatus;
@@ -21,6 +22,7 @@ public class ReminderScheduler {
 
     private final LoanRepository loanRepository;
     private final ReminderService reminderService;
+    private final CallingService callingService;
 
     @Scheduled(fixedRate = 60_000)
     @Transactional
@@ -59,6 +61,37 @@ public class ReminderScheduler {
                         reminder.getScheduledAt(),
                         reminder.getStatus()
                 );
+
+                if (reminder.getStatus() != ReminderStatus.SCHEDULED) {
+                    continue;
+                }
+
+                try {
+
+                    reminder.setStatus(ReminderStatus.CALLING);
+
+                    callingService.callBorrower(reminder);
+
+                    reminderService.markCalled(reminder);
+
+                    log.info(
+                            "Borrower call completed: loanId={}, borrower={}",
+                            loan.getId(),
+                            loan.getBorrower().getName()
+                    );
+
+
+                } catch (Exception exception) {
+
+                    reminderService.markFailed(reminder);
+
+                    log.error(
+                            "Borrower call failed: loanId={}, borrower={}",
+                            loan.getId(),
+                            loan.getBorrower().getName(),
+                            exception
+                    );
+                }
             }
         }
     }

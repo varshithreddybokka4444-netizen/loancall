@@ -31,4 +31,19 @@ public class ReminderService {
                     return reminderRepository.save(reminder);
                 });
     }
+
+    public Reminder markCalled(Reminder reminder) {
+
+        reminder.setStatus(ReminderStatus.CALLED);
+        reminder.setCalledAt(LocalDateTime.now());
+
+        return reminderRepository.save(reminder);
+    }
+
+    public Reminder markFailed(Reminder reminder) {
+
+        reminder.setStatus(ReminderStatus.FAILED);
+
+        return reminderRepository.save(reminder);
+    }
 }
