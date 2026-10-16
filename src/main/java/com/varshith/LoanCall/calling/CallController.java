@@ -20,16 +20,6 @@ public class CallController {
     private final ReminderRepository reminderRepository;
     private final CallingService callingService;
 
-    @PostMapping("/test/{reminderId}")
-    public String testCall(@PathVariable Long reminderId) {
-        Reminder reminder = reminderRepository.findById(reminderId)
-                .orElseThrow(() ->
-                        new RuntimeException("Reminder not found"));
-
-        callingService.callBorrower(reminder);
-        return "Call initiated successfully";
-    }
-
     @RequestMapping(
             value = "/twiml/{reminderId}",
             method = {RequestMethod.GET, RequestMethod.POST},
