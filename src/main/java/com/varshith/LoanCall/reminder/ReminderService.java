@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.transaction.annotation.Propagation;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
@@ -15,6 +16,7 @@ public class ReminderService {
 
     private final ReminderRepository reminderRepository;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Reminder createReminder(
             Loan loan,
             YearMonth billingMonth,
