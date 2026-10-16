@@ -48,8 +48,10 @@ public class TwilioCallingService implements CallingService {
         String toPhoneNumber =
                 normalizeIndianPhoneNumber(borrowerPhone);
 
+
+
         URI twimlUrl = URI.create(
-                "https://YOUR-PUBLIC-URL/api/calls/twiml/"
+                "https://client-entangled-sibling.ngrok-free.dev/api/calls/twiml/"
                         + reminder.getId()
         );
 

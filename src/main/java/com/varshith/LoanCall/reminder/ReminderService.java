@@ -1,8 +1,10 @@
+
 package com.varshith.LoanCall.reminder;
 
 import com.varshith.LoanCall.loan.Loan;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -22,7 +24,6 @@ public class ReminderService {
                 .findByLoanAndBillingMonth(loan, billingMonth)
                 .orElseGet(() -> {
                     Reminder reminder = new Reminder();
-
                     reminder.setLoan(loan);
                     reminder.setBillingMonth(billingMonth);
                     reminder.setScheduledAt(scheduledAt);
@@ -32,16 +33,27 @@ public class ReminderService {
                 });
     }
 
-    public Reminder markCalled(Reminder reminder) {
+    @Transactional(
+            propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
+    )
+    public boolean claimReminder(Long reminderId) {
+        return reminderRepository.claimReminder(
+                reminderId,
+                ReminderStatus.SCHEDULED,
+                ReminderStatus.CALLING
+        ) == 1;
+    }
 
+    @Transactional
+    public Reminder markCalled(Reminder reminder) {
         reminder.setStatus(ReminderStatus.CALLED);
         reminder.setCalledAt(LocalDateTime.now());
 
         return reminderRepository.save(reminder);
     }
 
+    @Transactional
     public Reminder markFailed(Reminder reminder) {
-
         reminder.setStatus(ReminderStatus.FAILED);
 
         return reminderRepository.save(reminder);
