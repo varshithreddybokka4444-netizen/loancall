@@ -1,8 +1,12 @@
+
 package com.varshith.LoanCall.loan;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -13,10 +17,17 @@ public class LoanController {
 
     @PostMapping("/borrower/{borrowerId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Loan createLoan(
+    public LoanResponse createLoan(
             @PathVariable Long borrowerId,
-            @RequestBody CreateLoanRequest request
+            @Valid @RequestBody CreateLoanRequest request
     ) {
         return loanService.createLoan(borrowerId, request);
+    }
+
+    @GetMapping("/borrower/{borrowerId}")
+    public List<LoanResponse> getLoansByBorrowerId(
+            @PathVariable Long borrowerId
+    ) {
+        return loanService.getLoansByBorrowerId(borrowerId);
     }
 }
